@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { buildDashboardSummary, buildKnowledgeSpec, runOrchestrator } from '@/pipeline/orchestrator';
 import { insertGeneration, isSupabaseConfigured } from '@/lib/supabase';
+import { runPipeline } from '@/lib/pipeline/orchestrator';
 
 export async function POST(request) {
   try {
@@ -54,6 +55,7 @@ export async function POST(request) {
       return NextResponse.json(result, { status: 422 });
     }
 
+    const result = await runPipeline({ prompt });
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
