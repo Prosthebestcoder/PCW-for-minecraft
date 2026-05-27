@@ -56,6 +56,7 @@ export default function ResultPage() {
 
       <div className="grid gap-5 lg:grid-cols-2">
         <Card title="Original Idea"><p className="whitespace-pre-wrap text-slate-200">{result.idea}</p></Card>
+        <Card title="Auto Improved Idea Seed"><p className="whitespace-pre-wrap text-slate-200">{result.autoImprovedIdea || result.idea}</p></Card>
         <Card title="Improved Idea"><p className="whitespace-pre-wrap text-slate-200">{result.improvedIdea}</p></Card>
         <Card title="Score Breakdown">
           <ul className="space-y-1 text-slate-300">

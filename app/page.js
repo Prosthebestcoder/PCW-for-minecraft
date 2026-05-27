@@ -8,10 +8,12 @@ export default function HomePage() {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [questions, setQuestions] = useState([]);
 
   const onSubmit = async (event) => {
     event.preventDefault();
     setError('');
+    setQuestions([]);
     if (!prompt.trim()) return setError('Please provide a detailed plugin vision.');
     setLoading(true);
 
@@ -22,6 +24,14 @@ export default function HomePage() {
         body: JSON.stringify({ prompt }),
       });
       const payload = await response.json();
+      if (!response.ok) {
+        if (response.status === 422 && payload?.questions?.length) {
+          setError(payload.message || 'More detail is required before generation.');
+          setQuestions(payload.questions);
+          return;
+        }
+        throw new Error(payload?.error || 'Generation failed');
+      }
       if (!response.ok) throw new Error(payload?.error || 'Generation failed');
       sessionStorage.setItem('forge:lastResult', JSON.stringify(payload));
       router.push('/result');
@@ -56,6 +66,13 @@ export default function HomePage() {
             onChange={(event) => setPrompt(event.target.value)}
           />
           {error ? <p className="text-sm text-rose-300">{error}</p> : null}
+          {questions.length ? (
+            <ul className="space-y-2 rounded-xl border border-amber-300/30 bg-amber-300/10 p-3 text-sm text-amber-100">
+              {questions.map((question) => (
+                <li key={question}>• {question}</li>
+              ))}
+            </ul>
+          ) : null}
           <button
             type="submit"
             disabled={loading}
