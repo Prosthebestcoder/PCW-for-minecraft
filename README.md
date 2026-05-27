@@ -12,6 +12,7 @@ npm install --registry=$NPM_REGISTRY_URL
 
 If installs fail with `403 Forbidden`, confirm your network policy allows access to your configured registry and that no global deprecated `http-proxy` npm config is injected. This repository ships a local `.npmrc` with explicit registry defaults so installs are deterministic.
 
+
 ## Environment Variables
 
 Create/update `.env.local` with server-only API keys:
@@ -39,3 +40,4 @@ Expected table schema (example):
 - `prompt` text
 - `output` jsonb
 - `created_at` timestamptz default `now()`
+

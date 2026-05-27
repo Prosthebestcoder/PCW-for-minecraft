@@ -101,39 +101,3 @@ export async function buildKnowledgeSpec({ knowledge, idea }) {
 
   return response.output;
 }
-
-export async function buildProjectPackage({ code, spec }) {
-  const response = await routeToModel('specification', {
-    prompt: { code, spec },
-    task: 'project_packager',
-  });
-
-  return response.output;
-}
-
-export async function validateProjectPackage({ files }) {
-  const response = await routeToModel('specification', {
-    prompt: { files },
-    task: 'project_validator',
-  });
-
-  return response.output;
-}
-
-export async function buildMavenProjectPackage({ code, spec }) {
-  const response = await routeToModel('specification', {
-    prompt: { code, spec },
-    task: 'maven_project_packager',
-  });
-
-  return response.output;
-}
-
-export async function fixMavenBuild({ error, files }) {
-  const response = await routeToModel('specification', {
-    prompt: { error, files },
-    task: 'maven_build_fixer',
-  });
-
-  return response.output;
-}

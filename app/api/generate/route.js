@@ -1,14 +1,7 @@
 import { NextResponse } from 'next/server';
-import {
-  buildDashboardSummary,
-  buildKnowledgeSpec,
-  buildProjectPackage,
-  runOrchestrator,
-  validateProjectPackage,
-  buildMavenProjectPackage,
-  fixMavenBuild,
-} from '@/pipeline/orchestrator';
+import { buildDashboardSummary, buildKnowledgeSpec, runOrchestrator } from '@/pipeline/orchestrator';
 import { insertGeneration, isSupabaseConfigured } from '@/lib/supabase';
+import { runPipeline } from '@/lib/pipeline/orchestrator';
 
 export async function POST(request) {
   try {
@@ -35,46 +28,11 @@ export async function POST(request) {
     }
 
     if (mode === 'knowledge_spec') {
-      if (!body?.idea?.trim()) {
-        return NextResponse.json({ error: 'Idea is required for knowledge_spec mode.' }, { status: 400 });
-      }
-
       const spec = await buildKnowledgeSpec({
         knowledge: body?.knowledge,
         idea: body?.idea,
       });
       return NextResponse.json({ specification: spec });
-    }
-
-    if (mode === 'project_packager') {
-      const packaged = await buildProjectPackage({
-        code: body?.code,
-        spec: body?.spec,
-      });
-      return NextResponse.json(packaged);
-    }
-
-    if (mode === 'project_validator') {
-      const result = await validateProjectPackage({
-        files: body?.files,
-      });
-      return NextResponse.json(result);
-    }
-
-    if (mode === 'maven_project_packager') {
-      const packaged = await buildMavenProjectPackage({
-        code: body?.code,
-        spec: body?.spec,
-      });
-      return NextResponse.json(packaged);
-    }
-
-    if (mode === 'maven_build_fixer') {
-      const fixed = await fixMavenBuild({
-        error: body?.error,
-        files: body?.files,
-      });
-      return NextResponse.json(fixed);
     }
 
     const prompt = body?.prompt?.trim();
@@ -97,6 +55,7 @@ export async function POST(request) {
       return NextResponse.json(result, { status: 422 });
     }
 
+    const result = await runPipeline({ prompt });
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json(
