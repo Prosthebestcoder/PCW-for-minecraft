@@ -32,6 +32,7 @@ export default function HomePage() {
         }
         throw new Error(payload?.error || 'Generation failed');
       }
+      if (!response.ok) throw new Error(payload?.error || 'Generation failed');
       sessionStorage.setItem('forge:lastResult', JSON.stringify(payload));
       router.push('/result');
     } catch (e) {
